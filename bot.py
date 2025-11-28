@@ -45,18 +45,16 @@ async def main():
         # Проверяем подключение к базе данных
         test_player = await db.get_player(1)  # Тестовый запрос
         print("✅ База данных инициализирована успешно")
+        
+        # Запускаем бота
+        print("✅ Бот запущен")
+        await dp.start_polling(bot)
     except Exception as e:
-        print(f"❌ Ошибка при инициализации базы данных: {e}")
+        print(f"❌ Ошибка: {e}")
         import traceback
         traceback.print_exc()
+        # Выходим, так как без БД бот работать не сможет
         return
-
-    print("✅ Бот запущен")
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    keep_alive()              # запускаем Flask-сервер один раз
-    asyncio.run(main())       # запускаем aiogram
 
 # Функции для обратной совместимости
 async def get_user(user_id: int, username: str = None, first_name: str = None) -> dict:
@@ -3715,24 +3713,6 @@ async def handle_plain_russian_commands(message: types.Message, state: FSMContex
 
 
 
-async def main():
-    print("✅ Бот запущен.")
-    try:
-        # Инициализируем подключение к PostgreSQL
-        print("Подключение к PostgreSQL...")
-        # Инициализация базы данных происходит автоматически при импорте database.py
-        print("✅ Подключение к PostgreSQL успешно установлено!")
-        
-        # Запускаем бота
-        print("Запуск бота...")
-        await dp.start_polling(bot)
-    except OSError as e:
-        if "Address already in use" in str(e):
-            print("Ошибка: Порт уже используется. Пожалуйста, закройте другое приложение, использующее этот порт.")
-        raise
-    except Exception as e:
-        print(f"Произошла ошибка: {str(e)}")
-        raise
 
 if __name__ == "__main__":
     import asyncio

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: mxphone-bot
+    env: python
+    region: singapore  # Выберите ближайший к вам регион
+    plan: free  # Или starter для больших проектов
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: FIREBASE_CREDENTIALS
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "test1234",
+    "seller_id": 123456789,
+    "seller_name": "testuser",
+    "item": {
+      "id": "item001",
+      "phone": "Galaxy S24 Ultra",
+      "rarity": "Эпический"
+    },
+    "price": 6800,
+    "description": "Новый, с коробкой",
+    "timestamp": "2025-11-07T17:00:00"
+  }
+]

@@ -1,9 +1,6 @@
-import sqlite3
 import os
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
 import json
-import os
+# Replace psycopg2 with psycopg2-binary
 import psycopg2
 from psycopg2.extras import DictCursor, Json
 from typing import Dict, List, Optional, Any, Union
@@ -12,12 +9,12 @@ from urllib.parse import urlparse
 class Database:
     def __init__(self, db_url: str = None):
         try:
-            # Получаем URL базы данных из переменных окружения или используем переданный
+            # Get database URL from environment or use the provided one
             self.db_url = db_url or os.getenv('DATABASE_URL')
             if not self.db_url:
-                raise ValueError("Не указан URL базы данных. Установите переменную окружения DATABASE_URL")
+                raise ValueError("Database URL not provided. Set the DATABASE_URL environment variable.")
                 
-            # Парсим URL для получения параметров подключения
+            # Parse the URL for connection parameters
             result = urlparse(self.db_url)
             self.db_params = {
                 'dbname': result.path[1:],
@@ -27,16 +24,16 @@ class Database:
                 'port': result.port
             }
             
-            print(f"Подключение к базе данных PostgreSQL: {result.hostname}:{result.port}/{result.path[1:]}")
+            print(f"Connecting to PostgreSQL database: {result.hostname}:{result.port}/{result.path[1:]}")
             
-            # Тестируем подключение
+            # Test the connection
             self._test_connection()
             
-            # Инициализируем таблицы
+            # Initialize the database
             self._init_db()
             
         except Exception as e:
-            print(f"Ошибка при инициализации базы данных: {str(e)}")
+            print(f"Error initializing database: {str(e)}")
             raise
     
     def _get_connection(self):

@@ -6,10 +6,31 @@ import json
 
 class Database:
     def __init__(self, db_path: str = 'bot_data.db'):
-        self.db_path = os.getenv('DATABASE_URL', f'sqlite:///{db_path}').replace('sqlite:///', '')
+        # Get database path from environment or use default
+        db_url = os.getenv('DATABASE_URL')
+        if db_url and db_url.startswith('sqlite:///'):
+            self.db_path = db_url.replace('sqlite:///', '')
+        else:
+            # Use absolute path for the database file
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            db_dir = os.path.join(base_dir, 'data')
+            
+            # Create data directory if it doesn't exist
+            os.makedirs(db_dir, exist_ok=True)
+            
+            self.db_path = os.path.join(db_dir, db_path)
+        
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(os.path.abspath(self.db_path)), exist_ok=True)
+        
         self._init_db()
     
     def _get_connection(self):
+        # Create directory if it doesn't exist
+        db_dir = os.path.dirname(os.path.abspath(self.db_path))
+        if db_dir:  # Only create directory if path is not in current directory
+            os.makedirs(db_dir, exist_ok=True)
+            
         return sqlite3.connect(self.db_path)
 
     def _init_db(self):

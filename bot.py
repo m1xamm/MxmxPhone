@@ -27,13 +27,17 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 
 # === Настройки ===
-TOKEN = "8057917930:AAH67CjfNADz83ddUnj9bqNtF6WjQXV8Fx4"  # <- ваш токен
+import os
+from dotenv import load_dotenv
 
-# === Подключение к SQLite ===
+# Загружаем переменные окружения из .env файла
+load_dotenv()
+
+# Получаем токен бота из переменных окружения
+TOKEN = os.getenv('BOT_TOKEN', '8057917930:AAH67CjfNADz83ddUnj9bqNtF6WjQXV8Fx4')
+
+# Импортируем PostgreSQL базу данных
 from database import db, get_player, create_player, update_player
-
-# Глобальный кеш для обратной совместимости
-data = {"players": {}, "market": []}
 
 # Инициализация бота и диспетчера
 bot = Bot(token=TOKEN)

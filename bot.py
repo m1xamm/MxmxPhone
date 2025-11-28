@@ -226,18 +226,35 @@ data: dict = {"players": {}, "market": []}
 
 def save_data_sync(data_to_save: dict):
     """Синхронная версия сохранения (для обратной совместимости)"""
-    # Вызываем асинхронную версию
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # Если цикл уже запущен, создаем задачу
-            asyncio.create_task(save_data(data_to_save))
-        else:
-            # Если цикл не запущен, запускаем синхронно
-            loop.run_until_complete(save_data(data_to_save))
-    except RuntimeError:
-        # Если нет цикла событий, создаем новый
-        asyncio.run(save_data(data_to_save))
+        # Обновляем данные игроков в базе данных
+        if 'players' in data_to_save:
+            for user_id_str, user_data in data_to_save['players'].items():
+                try:
+                    user_id = int(user_id_str)
+                    # Обновляем данные игрока в базе
+                    db.update_player(user_id, user_data)
+                except Exception as e:
+                    print(f"Ошибка при обновлении пользователя {user_id_str}: {e}")
+                    continue
+                
+        # Обновляем данные маркета в базе данных
+        if 'market' in data_to_save:
+            # Пока сохраняем маркет в файл, но можно перенести в БД
+            try:
+                with open('market.json', 'w', encoding='utf-8') as f:
+                    json.dump(data_to_save.get('market', []), f, ensure_ascii=False, indent=2)
+            except Exception as e:
+                print(f"Ошибка при сохранении маркета: {e}")
+                
+    except Exception as e:
+        print(f"Критическая ошибка при сохранении данных: {e}")
+        # В крайнем случае сохраняем полный дамп в файл
+        try:
+            with open('data_backup.json', 'w', encoding='utf-8') as f:
+                json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+        except Exception as backup_err:
+            print(f"Не удалось создать резервную копию: {backup_err}")
 
 def _migrate_legacy_users_to_players():
     """Перенос старых ключей (если были) в players"""

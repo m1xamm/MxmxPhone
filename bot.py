@@ -3725,14 +3725,18 @@ async def main():
         raise
 
 if __name__ == "__main__":
-    keep_alive()              # запускаем Flask-сервер один раз
-    asyncio.run(main())       # запускаем aiogram
-
-
-if __name__ == "__main__":
     print("Проверка подключения к Firebase...")
     db = init_firebase()
     print("✅ Подключение к Firebase успешно установлено!")
+    
+    # Запускаем Flask-сервер в отдельном потоке
+    from threading import Thread
+    flask_thread = Thread(target=keep_alive)
+    flask_thread.daemon = True
+    flask_thread.start()
+    
+    # Запускаем бота
+    asyncio.run(main())
 
 
 

@@ -24,3 +24,10 @@ ujson>=5.4.0,<6.0.0
 
 # Для логирования
 loguru>=0.7.0,<1.0.0
+
+psycopg2-binary==2.9.9
+python-dotenv==1.0.0
+aiogram==2.25.1
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.5
+passlib[bcrypt]==1.7.4

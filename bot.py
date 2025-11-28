@@ -32,6 +32,10 @@ from database import db, get_player, create_player, update_player
 # Глобальный кеш для обратной совместимости
 data = {"players": {}, "market": []}
 
+# Initialize bot and dispatcher
+bot = Bot(token=TOKEN)
+dp = Dispatcher(storage=MemoryStorage())
+
 async def main():
     print("🔄 Инициализация базы данных...")
     try:
@@ -121,15 +125,87 @@ def _to_path_safe(p):
         return None
     return Path(p) if not isinstance(p, Path) else p
 
-class SellFSM(StatesGroup):
-    waiting_count = State()
+# Для отображения
+rarity_emojis = {
+    "Обычный": "📱",
+    "Необычный": "📲",
+    "Редкий": "⭐️",
+    "Эпический": "👾",
+    "Мистический": "🚨",
+    "Легендарный": "🏆",
+    "Платина": "💠",
+    "Эксклюзив": "🍞",
+    "Экcклюзив": "🌓"
+}
 
-# Dispatcher
-dp = Dispatcher(storage=MemoryStorage())
+# Для логики
+rarity_names = {
+    "Обычный": "Обычный",
+    "Необычный": "Необычный",
+    "Редкий": "Редкий",
+    "Эпический": "Эпический",
+    "Мистический": "Мистический",
+    "Легендарный": "Легендарный",
+    "Платина": "Платина",
+    "Эксклюзив": "Эксклюзив",
+    "Экcклюзив": "Экcклюзив"
+}
+
+
+donate_ranks = {
+    "VIP": {
+        "emote": "⚡",
+        "limit": 1,
+        "cd": 7200,
+        "theme": "⚡"
+    },
+    "Premium": {
+        "emote": "🏅",
+        "limit": 2,
+        "cd": 6000,
+        "theme": "🏅"
+    },
+    "Deluxe": {
+        "emote": "💠",
+        "limit": 3,
+        "cd": 5400,
+        "theme": "💠"
+    },
+    "Legend": {
+        "emote": "👑",
+        "limit": 5,
+        "cd": 4800,
+        "theme": "👑"
+    },
+    "ULTRA": {
+        "emote": "🔮",
+        "limit": 10,
+        "cd": 4200,
+        "theme": "🔮"
+    }
+}
+
+
+
+# === Случайный телефон ===
+def get_random_phone():
+    rarities = list(rarity_chances.keys())
+    weights = list(rarity_chances.values())
+    rarity = random.choices(rarities, weights=weights, k=1)[0]
+    phone = random.choice(list(phones[rarity].keys()))
+    price = phones[rarity][phone]
+    
+    # Проверяем шанс сломанного телефона (1%, кроме Платины)
+    is_broken = False
+    if rarity != "Платина" and random.random() < BROKEN_CHANCE:
+        is_broken = True
+    
+    return rarity, phone, price, is_broken
 
 def mention_user(obj):
-    u = obj.from_user
-    return f"@{u.username}" if u.username else u.first_name
+    if hasattr(obj, 'username') and obj.username:
+        return f'@{obj.username}'
+    return f'<a href="tg://user?id={obj.id}">{obj.full_name}</a>'
 
 # Лок для пользователя
 _user_locks = {}
@@ -138,10 +214,12 @@ def _get_user_lock(user_id: int):
         _user_locks[user_id] = asyncio.Lock()
     return _user_locks[user_id]
 
-
-
 # === Настройки ===
 TOKEN = "8057917930:AAH67CjfNADz83ddUnj9bqNtF6WjQXV8Fx4"  # <- твой токен
+
+# Initialize bot and dispatcher
+bot = Bot(token=TOKEN)
+dp = Dispatcher(storage=MemoryStorage())
 DATA_FILE = "data.json"
 COOLDOWN_HOURS = 2  # кулдаун 2 часа
 
@@ -409,12 +487,8 @@ def get_random_phone():
     
     return rarity, phone, price, is_broken
 
-# === Создание бота ===
-bot = Bot(token=TOKEN)
-# dispatcher already created above with MemoryStorage()
-
-import os
-import json
+# === Регистрация обработчиков ===
+# bot and dispatcher already created abovejson
 import psutil
 import platform
 import time

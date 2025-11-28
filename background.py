@@ -13,7 +13,7 @@ def ping():
     return "pong"
 
 def run():
-    port = int(os.environ.get("PORT", 9693))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host='0.0.0.0', port=port)
 
 def keep_alive():

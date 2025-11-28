@@ -3718,24 +3718,24 @@ async def handle_plain_russian_commands(message: types.Message, state: FSMContex
 async def main():
     print("✅ Бот запущен.")
     try:
+        # Инициализируем подключение к PostgreSQL
+        print("Подключение к PostgreSQL...")
+        # Инициализация базы данных происходит автоматически при импорте database.py
+        print("✅ Подключение к PostgreSQL успешно установлено!")
+        
+        # Запускаем бота
+        print("Запуск бота...")
         await dp.start_polling(bot)
     except OSError as e:
         if "Address already in use" in str(e):
-            print("Ошибка: Порт 10000 уже используется. Пожалуйста, закройте другое приложение, использующее этот порт, или измените порт в настройках бота.")
+            print("Ошибка: Порт уже используется. Пожалуйста, закройте другое приложение, использующее этот порт.")
+        raise
+    except Exception as e:
+        print(f"Произошла ошибка: {str(e)}")
         raise
 
 if __name__ == "__main__":
-    print("Проверка подключения к Firebase...")
-    db = init_firebase()
-    print("✅ Подключение к Firebase успешно установлено!")
-    
-    # Запускаем Flask-сервер в отдельном потоке
-    from threading import Thread
-    flask_thread = Thread(target=keep_alive)
-    flask_thread.daemon = True
-    flask_thread.start()
-    
-    # Запускаем бота
+    import asyncio
     asyncio.run(main())
 
 

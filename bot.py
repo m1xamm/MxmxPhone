@@ -26,13 +26,16 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.storage.memory import MemoryStorage
 
 
+# === Настройки ===
+TOKEN = "8057917930:AAH67CjfNADz83ddUnj9bqNtF6WjQXV8Fx4"  # <- ваш токен
+
 # === Подключение к SQLite ===
 from database import db, get_player, create_player, update_player
 
 # Глобальный кеш для обратной совместимости
 data = {"players": {}, "market": []}
 
-# Initialize bot and dispatcher
+# Инициализация бота и диспетчера
 bot = Bot(token=TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
@@ -214,12 +217,6 @@ def _get_user_lock(user_id: int):
         _user_locks[user_id] = asyncio.Lock()
     return _user_locks[user_id]
 
-# === Настройки ===
-TOKEN = "8057917930:AAH67CjfNADz83ddUnj9bqNtF6WjQXV8Fx4"  # <- твой токен
-
-# Initialize bot and dispatcher
-bot = Bot(token=TOKEN)
-dp = Dispatcher(storage=MemoryStorage())
 DATA_FILE = "data.json"
 COOLDOWN_HOURS = 2  # кулдаун 2 часа
 

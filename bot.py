@@ -3717,9 +3717,12 @@ async def handle_plain_russian_commands(message: types.Message, state: FSMContex
 
 async def main():
     print("✅ Бот запущен.")
-    # Загружаем данные при старте
-    await load_data()
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    except OSError as e:
+        if "Address already in use" in str(e):
+            print("Ошибка: Порт 10000 уже используется. Пожалуйста, закройте другое приложение, использующее этот порт, или измените порт в настройках бота.")
+        raise
 
 if __name__ == "__main__":
     keep_alive()              # запускаем Flask-сервер один раз

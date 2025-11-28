@@ -2,8 +2,8 @@ import sqlite3
 import os
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
-import jsonimport os
 import json
+import os
 import psycopg2
 from psycopg2.extras import DictCursor, Json
 from typing import Dict, List, Optional, Any, Union
